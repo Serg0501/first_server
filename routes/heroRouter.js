@@ -1,12 +1,13 @@
 const {Router} = require('express');
 const {heroController} = require('../controllers');
-
 const heroRouter = Router();
+const {uploadFile} = require('../middleware');
 
 //   /api/heroes
 heroRouter
 .route('/')
-.get(heroController.getALLHeroes);
+.post(uploadFile.uploadHeroPhoto, heroController.createNewHero)
+.get(heroController.getAllHeroes);
 
 // /api/heroes/:heroId
 heroRouter

@@ -1,12 +1,31 @@
 const {Hero, Power, sequelize} = require('../db/models');
 const createError = require('http-errors');
+const _ = require('lodash');
+
+// createNewHero 
+
+module.exports.createNewHero = async (req, res, next) => {
+    const {body, file}= req;
+    if(file){ body.image = file.filename; }
+    if(! body.superpowers) { body.superpowers = [];}
+    try{ 
+        const newHero = await Hero.create(body);
+        const newHeroPowers  = await newHero.setPowers(body.superpowers);
+        const objHero = _.omit(newHero.get(), ['createdAt', 'updatedAt']);
+        objHero.superpowers = body.superpowers.map(i => Number(i));
+        res.status(200).send({data:  objHero});
+    }catch(err){
+        next(err);
+    }
+};
 
 // getAllHeroes 
 
 module.exports.getAllHeroes = async (req, res, next) => {
     try{
         const foundHeroes = await Hero.findAll({
-            attributes: {exclude: ['createdAt', 'updatedAt']},
+            attributes: {
+                exclude: ['createdAt', 'updatedAt']},
             include: {
                 model: Power,
                 attributes: {exclude: ['createdAt', 'updatedAt']},
