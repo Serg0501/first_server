@@ -1,0 +1,6 @@
+const path = require('path');
+
+module.exports = {
+    STATIC_PATH: path.join(_dirname, 'public'),
+
+};
